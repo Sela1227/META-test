@@ -2,7 +2,9 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>新陳代謝科住院醫師評估系統</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -28,19 +30,23 @@
   --radius: 12px;
   --font: 'Noto Sans TC', sans-serif;
   --mono: 'DM Mono', monospace;
+  --sidebar-w: 220px;
+  --bottom-nav-h: 64px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
 body {
   font-family: var(--font);
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
   display: flex;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Sidebar */
+/* ===================== SIDEBAR (desktop) ===================== */
 .sidebar {
-  width: 220px;
+  width: var(--sidebar-w);
   min-height: 100vh;
   background: var(--accent);
   display: flex;
@@ -58,392 +64,373 @@ body {
 .sidebar-nav { padding: 16px 0; flex: 1; }
 .nav-item {
   display: flex; align-items: center; gap: 12px;
-  padding: 12px 20px;
+  padding: 13px 20px;
   color: rgba(255,255,255,0.65);
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 400;
+  font-size: 14px; font-weight: 400;
   transition: all 0.18s;
   border-left: 3px solid transparent;
+  user-select: none;
 }
 .nav-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
 .nav-item.active { background: rgba(255,255,255,0.12); color: #fff; border-left-color: #22d4f5; font-weight: 500; }
 .nav-icon { font-size: 16px; width: 20px; text-align: center; }
-.sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.12); font-size: 11px; color: rgba(255,255,255,0.35); }
+.sidebar-footer { padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.12); font-size: 11px; color: rgba(255,255,255,0.35); display: flex; justify-content: space-between; align-items: center; }
+.version-badge { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); font-family: var(--mono); font-size: 11px; padding: 2px 8px; border-radius: 4px; }
 
-/* Main */
-.main { margin-left: 220px; flex: 1; min-height: 100vh; }
+/* ===================== MAIN ===================== */
+.main { margin-left: var(--sidebar-w); flex: 1; min-height: 100vh; }
 .topbar {
   background: var(--surface);
-  padding: 18px 32px;
+  padding: 16px 28px;
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 50;
 }
-.topbar-title { font-size: 18px; font-weight: 700; color: var(--text); }
+.topbar-title { font-size: 17px; font-weight: 700; color: var(--text); }
 .topbar-sub { font-size: 12px; color: var(--text3); font-family: var(--mono); margin-top: 2px; }
-.topbar-right { display: flex; align-items: center; gap: 16px; }
 .today-badge {
-  background: var(--accent-light);
-  color: var(--accent);
-  font-size: 12px;
-  font-family: var(--mono);
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-weight: 500;
+  background: var(--accent-light); color: var(--accent);
+  font-size: 12px; font-family: var(--mono);
+  padding: 4px 12px; border-radius: 20px; font-weight: 500;
+  white-space: nowrap;
 }
-.content { padding: 28px 32px; }
+.content { padding: 24px 28px; }
 
-/* Cards */
+/* ===================== BOTTOM NAV (mobile) ===================== */
+.bottom-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: var(--bottom-nav-h);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  z-index: 200;
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+}
+.bottom-nav-inner {
+  display: flex; height: 100%;
+}
+.bottom-nav-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 3px;
+  cursor: pointer; color: var(--text3);
+  font-size: 10px; font-weight: 500;
+  transition: color 0.15s;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  user-select: none;
+}
+.bottom-nav-item.active { color: var(--accent); }
+.bottom-nav-item .bnav-icon { font-size: 20px; line-height: 1; }
+
+/* ===================== CARDS ===================== */
 .card {
   background: var(--surface);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 .card-header {
-  padding: 18px 22px 14px;
+  padding: 16px 20px 12px;
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 8px;
 }
 .card-title { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: 0.3px; }
-.card-body { padding: 18px 22px; }
+.card-body { padding: 16px 20px; }
 
-/* Grid */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+/* ===================== GRID ===================== */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 
-/* Stat boxes */
+/* ===================== STAT BOXES ===================== */
 .stat-box {
-  background: var(--surface);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  padding: 20px;
-  box-shadow: var(--shadow);
+  background: var(--surface); border-radius: var(--radius);
+  border: 1px solid var(--border); padding: 16px 18px; box-shadow: var(--shadow);
 }
-.stat-label { font-size: 11px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
-.stat-value { font-size: 32px; font-family: var(--mono); font-weight: 500; color: var(--text); }
-.stat-sub { font-size: 12px; color: var(--text2); margin-top: 4px; }
+.stat-label { font-size: 10px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+.stat-value { font-size: 28px; font-family: var(--mono); font-weight: 500; color: var(--text); }
+.stat-sub { font-size: 11px; color: var(--text2); margin-top: 3px; }
 
-/* Resident cards in dashboard */
+/* ===================== RESIDENT ROWS ===================== */
 .resident-row {
-  display: flex; align-items: center; gap: 14px;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  transition: background 0.15s;
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 0; border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background 0.15s;
 }
 .resident-row:last-child { border-bottom: none; }
-.resident-row:hover { background: var(--surface2); margin: 0 -22px; padding: 14px 22px; border-radius: 8px; }
-.status-dot {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
+.resident-row:hover, .resident-row:active { background: var(--surface2); margin: 0 -20px; padding: 13px 20px; border-radius: 8px; }
+.status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .status-dot.red { background: var(--red); box-shadow: 0 0 0 3px rgba(224,82,82,0.2); }
 .status-dot.yellow { background: var(--yellow); box-shadow: 0 0 0 3px rgba(224,154,48,0.2); }
 .status-dot.green { background: var(--green); box-shadow: 0 0 0 3px rgba(61,170,114,0.2); }
 .resident-avatar {
-  width: 38px; height: 38px;
-  border-radius: 50%;
+  width: 38px; height: 38px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px; font-weight: 700; color: #fff;
-  flex-shrink: 0;
+  font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
 }
-.resident-info { flex: 1; }
-.resident-name { font-size: 14px; font-weight: 600; color: var(--text); }
-.resident-meta { font-size: 12px; color: var(--text3); font-family: var(--mono); margin-top: 2px; }
-.resident-days {
-  font-size: 12px;
-  font-family: var(--mono);
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-weight: 500;
-}
+.resident-info { flex: 1; min-width: 0; }
+.resident-name { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.resident-meta { font-size: 11px; color: var(--text3); font-family: var(--mono); margin-top: 2px; }
+.resident-days { font-size: 11px; font-family: var(--mono); padding: 4px 9px; border-radius: 20px; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
 .days-red { background: var(--red-light); color: var(--red); }
 .days-yellow { background: var(--yellow-light); color: var(--yellow); }
 .days-green { background: var(--green-light); color: var(--green); }
 
-/* Buttons */
+/* ===================== BUTTONS ===================== */
 .btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-family: var(--font);
-  font-weight: 500;
-  cursor: pointer;
-  border: none;
-  transition: all 0.18s;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 9px 16px; border-radius: 8px;
+  font-size: 13px; font-family: var(--font); font-weight: 500;
+  cursor: pointer; border: none; transition: all 0.18s;
+  white-space: nowrap; min-height: 36px; user-select: none;
 }
 .btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: #135570; }
+.btn-primary:hover, .btn-primary:active { background: #135570; }
 .btn-secondary { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
-.btn-secondary:hover { background: var(--border); }
+.btn-secondary:hover, .btn-secondary:active { background: var(--border); }
 .btn-danger { background: var(--red-light); color: var(--red); border: 1px solid rgba(224,82,82,0.2); }
-.btn-danger:hover { background: #fde0e0; }
-.btn-sm { padding: 5px 12px; font-size: 12px; }
+.btn-danger:hover, .btn-danger:active { background: #fde0e0; }
+.btn-sm { padding: 6px 12px; font-size: 12px; min-height: 30px; }
 .btn-archive { background: #f0f4f8; color: var(--text2); border: 1px solid var(--border); }
-.btn-archive:hover { background: var(--border); }
+.btn-archive:hover, .btn-archive:active { background: var(--border); }
+.btn-block { width: 100%; }
 
-/* Form */
-.form-group { margin-bottom: 18px; }
+/* ===================== FORM ===================== */
+.form-group { margin-bottom: 16px; }
 .form-label { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; display: block; }
 .form-input {
-  width: 100%;
-  padding: 10px 14px;
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  font-size: 14px;
-  font-family: var(--font);
-  color: var(--text);
-  background: var(--surface);
-  transition: border-color 0.18s;
-  outline: none;
+  width: 100%; padding: 11px 14px;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  font-size: 16px; /* 16px prevents iOS zoom */
+  font-family: var(--font); color: var(--text); background: var(--surface);
+  transition: border-color 0.18s; outline: none; -webkit-appearance: none;
 }
 .form-input:focus { border-color: var(--accent2); }
 .form-select {
-  width: 100%;
-  padding: 10px 14px;
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  font-size: 14px;
-  font-family: var(--font);
-  color: var(--text);
-  background: var(--surface);
-  outline: none;
-  cursor: pointer;
+  width: 100%; padding: 11px 14px;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  font-size: 16px; font-family: var(--font); color: var(--text); background: var(--surface);
+  outline: none; cursor: pointer; -webkit-appearance: none;
 }
 .form-select:focus { border-color: var(--accent2); }
-textarea.form-input { resize: vertical; min-height: 80px; }
+textarea.form-input { resize: vertical; min-height: 80px; font-size: 14px; }
 
-/* Score slider */
+/* ===================== SCORE SLIDER ===================== */
 .score-item {
-  background: var(--surface2);
-  border-radius: 10px;
-  padding: 14px 16px;
-  margin-bottom: 10px;
-  border: 1px solid var(--border);
+  background: var(--surface2); border-radius: 10px;
+  padding: 14px 16px; margin-bottom: 10px; border: 1px solid var(--border);
 }
 .score-label { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-.score-num { font-family: var(--mono); font-size: 18px; font-weight: 500; color: var(--accent); }
+.score-num { font-family: var(--mono); font-size: 20px; font-weight: 500; color: var(--accent); }
 .score-slider {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 6px;
-  border-radius: 3px;
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 8px; border-radius: 4px;
   background: linear-gradient(to right, var(--accent2) 0%, var(--accent2) 50%, var(--border) 50%);
-  outline: none;
-  cursor: pointer;
+  outline: none; cursor: pointer;
 }
 .score-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 1px 4px rgba(26,107,138,0.3);
-  cursor: pointer;
+  -webkit-appearance: none; appearance: none;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 2px 6px rgba(26,107,138,0.35); cursor: pointer;
+}
+.score-slider::-moz-range-thumb {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--accent); border: none; box-shadow: 0 2px 6px rgba(26,107,138,0.35); cursor: pointer;
 }
 .score-ticks { display: flex; justify-content: space-between; font-size: 10px; color: var(--text3); font-family: var(--mono); margin-top: 4px; }
 
-/* Checkbox items */
+/* ===================== CHECKBOXES ===================== */
 .check-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 12px 16px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  transition: background 0.15s;
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px;
+  cursor: pointer; transition: background 0.15s;
 }
-.check-item:hover { background: var(--accent-light); border-color: var(--accent2); }
-.check-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
-.check-item label { font-size: 13px; color: var(--text); cursor: pointer; flex: 1; }
+.check-item:hover, .check-item:active { background: var(--accent-light); border-color: var(--accent2); }
+.check-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+.check-item label { font-size: 14px; color: var(--text); cursor: pointer; flex: 1; }
 
-/* Tags */
-.tag {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 600;
-  font-family: var(--mono);
-}
+/* ===================== TAGS ===================== */
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; font-family: var(--mono); }
 .tag-active { background: var(--green-light); color: var(--green); }
 .tag-archived { background: #f0f0f0; color: #999; }
 
-/* Table */
+/* ===================== TABLE ===================== */
 .table { width: 100%; border-collapse: collapse; }
-.table th {
-  font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  color: var(--text3); padding: 10px 14px; text-align: left;
-  border-bottom: 2px solid var(--border);
-}
-.table td { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid var(--border); color: var(--text); }
+.table th { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); padding: 10px 12px; text-align: left; border-bottom: 2px solid var(--border); }
+.table td { padding: 12px 12px; font-size: 13px; border-bottom: 1px solid var(--border); color: var(--text); }
 .table tr:last-child td { border-bottom: none; }
 .table tr:hover td { background: var(--surface2); }
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
-/* Charts area */
-.chart-container { position: relative; height: 280px; }
+/* ===================== CHARTS ===================== */
+.chart-container { position: relative; height: 260px; }
 .chart-container-sm { position: relative; height: 200px; }
-.chart-container-lg { position: relative; height: 360px; }
+.chart-container-lg { position: relative; height: 320px; }
 
-/* Sections */
-.section-heading {
-  font-size: 11px; font-weight: 700; letter-spacing: 2px;
-  text-transform: uppercase; color: var(--text3);
-  margin: 24px 0 12px;
-}
-
-/* Modal overlay */
+/* ===================== MODAL ===================== */
 .modal-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(28,37,51,0.4);
-  z-index: 200;
-  align-items: center;
-  justify-content: center;
+  display: none; position: fixed; inset: 0;
+  background: rgba(28,37,51,0.45); z-index: 300;
+  align-items: flex-end; justify-content: center;
   backdrop-filter: blur(3px);
 }
 .modal-overlay.open { display: flex; }
 .modal {
-  background: var(--surface);
-  border-radius: 16px;
-  width: 600px;
-  max-height: 85vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-  animation: slideUp 0.2s ease;
+  background: var(--surface); border-radius: 20px 20px 0 0;
+  width: 100%; max-height: 92vh; overflow-y: auto;
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.2);
+  animation: slideUp 0.25s ease;
+  padding-bottom: env(safe-area-inset-bottom, 16px);
 }
-.modal-wide { width: 780px; }
-@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.modal-drag-handle {
+  width: 40px; height: 4px; background: var(--border);
+  border-radius: 2px; margin: 12px auto 0; 
+}
 .modal-header {
-  padding: 22px 24px 16px;
-  border-bottom: 1px solid var(--border);
+  padding: 14px 22px 14px; border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; background: var(--surface); z-index: 1;
 }
 .modal-title { font-size: 16px; font-weight: 700; }
-.modal-close { cursor: pointer; font-size: 20px; color: var(--text3); background: none; border: none; line-height: 1; }
-.modal-body { padding: 22px 24px; }
+.modal-close { cursor: pointer; font-size: 22px; color: var(--text3); background: none; border: none; line-height: 1; padding: 4px; }
+.modal-body { padding: 18px 22px; }
 .modal-footer {
-  padding: 14px 24px;
-  border-top: 1px solid var(--border);
+  padding: 12px 22px; border-top: 1px solid var(--border);
   display: flex; justify-content: flex-end; gap: 10px;
   position: sticky; bottom: 0; background: var(--surface);
 }
 
-/* Radar chart area */
-.radar-wrap { display: flex; align-items: center; justify-content: center; height: 280px; }
+/* ===================== SECTION HEADING ===================== */
+.section-heading { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text3); margin: 20px 0 10px; }
+.divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
 
-/* Score display badge */
+/* ===================== SCORE BADGE ===================== */
 .score-badge {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 32px; height: 32px;
-  border-radius: 8px;
-  font-family: var(--mono);
-  font-size: 13px;
-  font-weight: 600;
+  width: 32px; height: 32px; border-radius: 8px;
+  font-family: var(--mono); font-size: 13px; font-weight: 600;
 }
 .score-badge.high { background: var(--green-light); color: var(--green); }
 .score-badge.mid { background: var(--yellow-light); color: var(--yellow); }
 .score-badge.low { background: var(--red-light); color: var(--red); }
 
-/* Avatar colors */
-.av1 { background: #4a90c4; }
-.av2 { background: #7b68cc; }
-.av3 { background: #e07b54; }
-.av4 { background: #4aab7a; }
-.av5 { background: #c45a8a; }
-.av6 { background: #5ab5c4; }
-.av7 { background: #c4a54a; }
-.av8 { background: #8a5ac4; }
+/* ===================== AVATAR COLORS ===================== */
+.av1{background:#4a90c4}.av2{background:#7b68cc}.av3{background:#e07b54}
+.av4{background:#4aab7a}.av5{background:#c45a8a}.av6{background:#5ab5c4}
+.av7{background:#c4a54a}.av8{background:#8a5ac4}
 
-.hidden { display: none !important; }
-.flex { display: flex; }
-.gap-10 { gap: 10px; }
-.mt-16 { margin-top: 16px; }
-.text-center { text-align: center; }
-
-/* Alert */
-.alert {
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  margin-bottom: 16px;
-}
-.alert-info { background: var(--accent-light); color: var(--accent); border: 1px solid rgba(26,107,138,0.2); }
-.alert-success { background: var(--green-light); color: var(--green); border: 1px solid rgba(61,170,114,0.2); }
-
-.divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
-
-/* Trend mini */
-.trend-up { color: var(--green); font-size: 12px; }
-.trend-down { color: var(--red); font-size: 12px; }
-
-/* Empty state */
+/* ===================== MISC ===================== */
 .empty-state { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 14px; }
-.empty-icon { font-size: 40px; margin-bottom: 12px; }
-
-/* Page transitions */
+.empty-icon { font-size: 36px; margin-bottom: 10px; }
+.alert { padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-bottom: 14px; }
+.alert-info { background: var(--accent-light); color: var(--accent); border: 1px solid rgba(26,107,138,0.2); }
 .page { animation: fadeIn 0.2s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ===================== ACTION BUTTON GROUP ===================== */
+.action-group { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* ===================== MOBILE BREAKPOINT ===================== */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding-bottom: var(--bottom-nav-h); }
+  .bottom-nav { display: block; }
+  .topbar { padding: 14px 16px; }
+  .topbar-title { font-size: 16px; }
+  .today-badge { display: none; }
+  .content { padding: 14px 14px; }
+  .grid-2 { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: 1fr; }
+  .grid-4 { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat-value { font-size: 24px; }
+  .modal { border-radius: 20px 20px 0 0; }
+  .card-body { padding: 12px 14px; }
+  .card-header { padding: 12px 14px 10px; }
+  .resident-row:hover { margin: 0; padding: 13px 0; border-radius: 0; }
+  /* Hide less important table columns on mobile */
+  .hide-mobile { display: none !important; }
+  /* Bigger touch targets */
+  .btn { min-height: 40px; }
+  .check-item { padding: 16px; }
+}
+
+@media (min-width: 769px) {
+  /* Desktop: modal centered, not bottom sheet */
+  .modal-overlay { align-items: center; }
+  .modal { border-radius: 16px; width: 600px; max-width: 90vw; }
+  .modal.modal-wide { width: 720px; }
+  .modal-drag-handle { display: none; }
+  .modal-footer { flex-direction: row; }
+}
 </style>
 </head>
 <body>
 
-<!-- Sidebar -->
+<!-- ===================== SIDEBAR (desktop) ===================== -->
 <aside class="sidebar">
   <div class="sidebar-logo">
     <div class="sub">Metabolism Dept.</div>
     <div class="title">住院醫師<br>評估系統</div>
   </div>
   <nav class="sidebar-nav">
-    <div class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard">
-      <span class="nav-icon">◈</span> Dashboard
-    </div>
-    <div class="nav-item" onclick="showPage('residents')" id="nav-residents">
-      <span class="nav-icon">◉</span> 學員管理
-    </div>
-    <div class="nav-item" onclick="showPage('evaluate')" id="nav-evaluate">
-      <span class="nav-icon">◎</span> 填寫評估
-    </div>
-    <div class="nav-item" onclick="showPage('history')" id="nav-history">
-      <span class="nav-icon">◇</span> 歷史紀錄
-    </div>
-    <div class="nav-item" onclick="showPage('stats')" id="nav-stats">
-      <span class="nav-icon">◆</span> 統計分析
-    </div>
+    <div class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard"><span class="nav-icon">◈</span>Dashboard</div>
+    <div class="nav-item" onclick="showPage('residents')" id="nav-residents"><span class="nav-icon">◉</span>學員管理</div>
+    <div class="nav-item" onclick="showPage('evaluate')" id="nav-evaluate"><span class="nav-icon">◎</span>填寫評估</div>
+    <div class="nav-item" onclick="showPage('history')" id="nav-history"><span class="nav-icon">◇</span>歷史紀錄</div>
+    <div class="nav-item" onclick="showPage('stats')" id="nav-stats"><span class="nav-icon">◆</span>統計分析</div>
   </nav>
-  <div class="sidebar-footer">v1.0 · 測試版</div>
+  <div class="sidebar-footer">
+    <span>新陳代謝科</span>
+    <span class="version-badge">V0.10</span>
+  </div>
 </aside>
 
-<!-- Main content -->
+<!-- ===================== MAIN ===================== -->
 <main class="main">
   <div class="topbar">
     <div>
       <div class="topbar-title" id="topbar-title">Dashboard</div>
       <div class="topbar-sub" id="topbar-sub">新陳代謝科住院醫師評估追蹤</div>
     </div>
-    <div class="topbar-right">
-      <div class="today-badge" id="today-badge"></div>
-    </div>
+    <div class="today-badge" id="today-badge"></div>
   </div>
   <div class="content" id="content"></div>
 </main>
 
-<!-- Modals -->
-<!-- Add Resident Modal -->
+<!-- ===================== BOTTOM NAV (mobile) ===================== -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <div class="bottom-nav-item active" id="bnav-dashboard" onclick="showPage('dashboard')">
+      <span class="bnav-icon">◈</span><span>主頁</span>
+    </div>
+    <div class="bottom-nav-item" id="bnav-residents" onclick="showPage('residents')">
+      <span class="bnav-icon">◉</span><span>學員</span>
+    </div>
+    <div class="bottom-nav-item" id="bnav-evaluate" onclick="showPage('evaluate')">
+      <span class="bnav-icon">◎</span><span>評估</span>
+    </div>
+    <div class="bottom-nav-item" id="bnav-history" onclick="showPage('history')">
+      <span class="bnav-icon">◇</span><span>紀錄</span>
+    </div>
+    <div class="bottom-nav-item" id="bnav-stats" onclick="showPage('stats')">
+      <span class="bnav-icon">◆</span><span>統計</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ===================== MODALS ===================== -->
+
+<!-- Add Resident -->
 <div class="modal-overlay" id="modal-add-resident">
   <div class="modal">
+    <div class="modal-drag-handle"></div>
     <div class="modal-header">
       <span class="modal-title">新增學員</span>
       <button class="modal-close" onclick="closeModal('modal-add-resident')">✕</button>
@@ -451,20 +438,18 @@ textarea.form-input { resize: vertical; min-height: 80px; }
     <div class="modal-body">
       <div class="form-group">
         <label class="form-label">姓名</label>
-        <input class="form-input" id="new-name" placeholder="輸入姓名" />
+        <input class="form-input" id="new-name" placeholder="輸入姓名" autocomplete="off"/>
       </div>
       <div class="grid-2">
         <div class="form-group">
           <label class="form-label">開始訓練日期</label>
-          <input class="form-input" type="date" id="new-start" />
+          <input class="form-input" type="date" id="new-start"/>
         </div>
         <div class="form-group">
           <label class="form-label">訓練年級</label>
           <select class="form-select" id="new-year">
-            <option value="R1">R1</option>
-            <option value="R2">R2</option>
-            <option value="R3">R3</option>
-            <option value="Fellow">Fellow</option>
+            <option value="R1">R1</option><option value="R2">R2</option>
+            <option value="R3">R3</option><option value="Fellow">Fellow</option>
           </select>
         </div>
       </div>
@@ -476,9 +461,10 @@ textarea.form-input { resize: vertical; min-height: 80px; }
   </div>
 </div>
 
-<!-- Archive Confirm Modal -->
+<!-- Archive Confirm -->
 <div class="modal-overlay" id="modal-archive">
   <div class="modal">
+    <div class="modal-drag-handle"></div>
     <div class="modal-header">
       <span class="modal-title">結束評估</span>
       <button class="modal-close" onclick="closeModal('modal-archive')">✕</button>
@@ -487,26 +473,25 @@ textarea.form-input { resize: vertical; min-height: 80px; }
       <p style="font-size:14px;color:var(--text2);margin-bottom:16px;">確定要結束 <strong id="archive-name-display"></strong> 的評估？評估紀錄將保留，可隨時查閱。</p>
       <div class="form-group">
         <label class="form-label">結束日期</label>
-        <input class="form-input" type="date" id="archive-date" />
+        <input class="form-input" type="date" id="archive-date"/>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-archive')">取消</button>
-      <button class="btn btn-danger" onclick="confirmArchive()">確認結束評估</button>
+      <button class="btn btn-danger" onclick="confirmArchive()">確認結束</button>
     </div>
   </div>
 </div>
 
-<!-- Evaluation Modal -->
+<!-- Evaluation -->
 <div class="modal-overlay" id="modal-evaluate">
   <div class="modal modal-wide">
+    <div class="modal-drag-handle"></div>
     <div class="modal-header">
       <span class="modal-title" id="eval-modal-title">填寫評估</span>
       <button class="modal-close" onclick="closeModal('modal-evaluate')">✕</button>
     </div>
-    <div class="modal-body" id="eval-modal-body">
-      <!-- filled dynamically -->
-    </div>
+    <div class="modal-body" id="eval-modal-body"></div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-evaluate')">取消</button>
       <button class="btn btn-primary" onclick="saveEvaluation()">儲存評估</button>
@@ -514,9 +499,10 @@ textarea.form-input { resize: vertical; min-height: 80px; }
   </div>
 </div>
 
-<!-- History Detail Modal -->
+<!-- Eval Detail -->
 <div class="modal-overlay" id="modal-eval-detail">
   <div class="modal modal-wide">
+    <div class="modal-drag-handle"></div>
     <div class="modal-header">
       <span class="modal-title" id="detail-modal-title">評估詳情</span>
       <button class="modal-close" onclick="closeModal('modal-eval-detail')">✕</button>
@@ -526,962 +512,594 @@ textarea.form-input { resize: vertical; min-height: 80px; }
 </div>
 
 <script>
-// =========================================================
-// DATA & STATE
-// =========================================================
+const VERSION = 'V0.10';
+
+// ===================== DATA =====================
 const SCORE_ITEMS = [
-  { id: 's1', label: '糖尿病診斷與藥物調整', category: '臨床知識' },
-  { id: 's2', label: '甲狀腺疾病評估與處置', category: '臨床知識' },
-  { id: 's3', label: '骨質疏鬆症診斷與治療', category: '臨床知識' },
-  { id: 's4', label: '代謝症候群與肥胖管理', category: '臨床知識' },
-  { id: 's5', label: '檢驗數值判讀', category: '臨床知識' },
-  { id: 's6', label: '病史詢問完整性', category: '臨床技能' },
-  { id: 's7', label: '鑑別診斷能力', category: '臨床技能' },
-  { id: 's8', label: '治療計畫制定與說明', category: '臨床技能' },
-  { id: 's9', label: '病患溝通與衛教', category: '態度溝通' },
-  { id: 's10', label: '病歷書寫品質', category: '態度溝通' },
-  { id: 's11', label: '團隊合作與交班', category: '態度溝通' },
+  { id:'s1',  label:'糖尿病診斷與藥物調整', category:'臨床知識' },
+  { id:'s2',  label:'甲狀腺疾病評估與處置', category:'臨床知識' },
+  { id:'s3',  label:'骨質疏鬆症診斷與治療', category:'臨床知識' },
+  { id:'s4',  label:'代謝症候群與肥胖管理', category:'臨床知識' },
+  { id:'s5',  label:'檢驗數值判讀',          category:'臨床知識' },
+  { id:'s6',  label:'病史詢問完整性',        category:'臨床技能' },
+  { id:'s7',  label:'鑑別診斷能力',          category:'臨床技能' },
+  { id:'s8',  label:'治療計畫制定與說明',    category:'臨床技能' },
+  { id:'s9',  label:'病患溝通與衛教',        category:'態度溝通' },
+  { id:'s10', label:'病歷書寫品質',          category:'態度溝通' },
+  { id:'s11', label:'團隊合作與交班',        category:'態度溝通' },
 ];
 const CHECK_ITEMS = [
-  { id: 'c1', label: '完成糖尿病個案報告' },
-  { id: 'c2', label: '參與門診 ≥ 20 次' },
-  { id: 'c3', label: '完成甲狀腺超音波判讀訓練' },
-  { id: 'c4', label: '參與科內教學討論' },
+  { id:'c1', label:'完成糖尿病個案報告' },
+  { id:'c2', label:'參與門診 ≥ 20 次' },
+  { id:'c3', label:'完成甲狀腺超音波判讀訓練' },
+  { id:'c4', label:'參與科內教學討論' },
 ];
+const AV = ['av1','av2','av3','av4','av5','av6','av7','av8'];
+function avatarColor(name){ let h=0; for(let c of name) h=(h*31+c.charCodeAt(0))%AV.length; return AV[h]; }
+function initials(name){ return name.length<=2?name:name.slice(-2); }
 
-const AVATAR_COLORS = ['av1','av2','av3','av4','av5','av6','av7','av8'];
-
-function getAvatarColor(name) {
-  let h = 0;
-  for (let c of name) h = (h * 31 + c.charCodeAt(0)) % AVATAR_COLORS.length;
-  return AVATAR_COLORS[h];
-}
-function getInitials(name) {
-  return name.length <= 2 ? name : name.slice(-2);
-}
-
-// =========================================================
-// GENERATE MOCK DATA
-// =========================================================
-function generateMockData() {
-  const names = [
-    '林佳慧','陳志明','王怡君','張文凱','李雅婷',
-    '劉宗翰','吳美玲','黃建宏','許淑芬','蔡志遠',
-    '鄭雅文','謝俊賢','洪雅琪','楊文哲','賴淑芳',
-    '高明仁','邱秀蘭','潘建志','蘇怡婷','周明宏',
-  ];
-  const years = ['R1','R2','R3','Fellow'];
-  const residents = [];
-  const evaluations = [];
-
-  // Generate residents from 2020 to 2025 (some archived, some active)
-  let ridx = 0;
-  for (let year = 2020; year <= 2025; year++) {
-    // 2-4 residents per year
-    const count = year >= 2025 ? 3 : (year === 2024 ? 4 : Math.floor(Math.random()*2)+2);
-    for (let i = 0; i < count && ridx < names.length; i++, ridx++) {
-      const startMonth = [2,7,8][Math.floor(Math.random()*3)]; // Feb, Jul, Aug
-      const startDate = `${year}-${String(startMonth).padStart(2,'0')}-01`;
-      const trainingYr = years[Math.min(ridx % 4, 3)];
-      const isActive = year === 2025 && i < 3;
-      let endDate = null;
-      if (!isActive) {
-        const endYear = year + 1;
-        endDate = `${endYear}-07-31`;
-      }
-      const r = {
-        id: `r${ridx+1}`,
-        name: names[ridx],
-        startDate,
-        endDate,
-        year: trainingYr,
-        status: isActive ? 'active' : 'archived',
-      };
+// ===================== MOCK DATA =====================
+function generateMock(){
+  const names=['林佳慧','陳志明','王怡君','張文凱','李雅婷','劉宗翰','吳美玲','黃建宏','許淑芬','蔡志遠','鄭雅文','謝俊賢','洪雅琪','楊文哲','賴淑芳','高明仁','邱秀蘭','潘建志','蘇怡婷','周明宏'];
+  const yrs=['R1','R2','R3','Fellow'];
+  const residents=[], evaluations=[];
+  let ri=0;
+  for(let yr=2020;yr<=2025;yr++){
+    const cnt=yr>=2025?3:(yr===2024?4:2+Math.floor(Math.random()*2));
+    for(let i=0;i<cnt&&ri<names.length;i++,ri++){
+      const sm=[2,7,8][ri%3];
+      const startDate=`${yr}-${String(sm).padStart(2,'0')}-01`;
+      const isActive=yr===2025&&i<3;
+      const endDate=isActive?null:`${yr+1}-07-31`;
+      const r={id:`r${ri+1}`,name:names[ri],startDate,endDate,year:yrs[ri%4],status:isActive?'active':'archived'};
       residents.push(r);
-
-      // Generate evaluations monthly during their training
-      const start = new Date(startDate);
-      const end = endDate ? new Date(endDate) : new Date();
-      let current = new Date(start);
-      current.setMonth(current.getMonth() + 1);
-      let evalIdx = 0;
-      while (current <= end && evalIdx < 14) {
-        // Simulate gradual improvement
-        const progress = evalIdx / 12;
-        const base = 4 + progress * 3 + (Math.random() - 0.3);
-        const scores = {};
-        SCORE_ITEMS.forEach(si => {
-          scores[si.id] = Math.min(10, Math.max(1, Math.round(base + (Math.random()-0.5)*2)));
-        });
-        const checks = {};
-        CHECK_ITEMS.forEach(ci => {
-          checks[ci.id] = Math.random() < (0.3 + progress * 0.5);
-        });
+      const start=new Date(startDate);
+      const end=endDate?new Date(endDate):new Date();
+      let cur=new Date(start); cur.setMonth(cur.getMonth()+1);
+      let ei=0;
+      while(cur<=end&&ei<14){
+        const prog=ei/12;
+        const base=4+prog*3+(Math.random()-0.3);
+        const scores={};
+        SCORE_ITEMS.forEach(si=>{ scores[si.id]=Math.min(10,Math.max(1,Math.round(base+(Math.random()-.5)*2))); });
+        const checks={};
+        CHECK_ITEMS.forEach(ci=>{ checks[ci.id]=Math.random()<(0.3+prog*0.5); });
         evaluations.push({
-          id: `e_${r.id}_${evalIdx}`,
-          residentId: r.id,
-          date: current.toISOString().split('T')[0],
-          scores,
-          checks,
-          comment: evalIdx === 0 ? '初次評估，積極學習中。' :
-            progress > 0.7 ? '進步明顯，臨床技能趨於成熟。' :
-            progress > 0.4 ? '穩定進步，繼續加強診斷思維。' : '基礎知識尚待加強，鼓勵多問問題。'
+          id:`e_${r.id}_${ei}`,residentId:r.id,
+          date:cur.toISOString().split('T')[0],
+          scores,checks,
+          comment:ei===0?'初次評估，積極學習中。':prog>0.7?'進步明顯，臨床技能趨於成熟。':prog>0.4?'穩定進步，繼續加強診斷思維。':'基礎知識尚待加強，鼓勵多問問題。'
         });
-        current.setMonth(current.getMonth() + 1);
-        evalIdx++;
+        cur.setMonth(cur.getMonth()+1); ei++;
       }
     }
   }
-
-  return { residents, evaluations };
+  return {residents,evaluations};
 }
 
-// =========================================================
-// STORAGE
-// =========================================================
-function loadData() {
-  try {
-    const raw = localStorage.getItem('metab_eval_v1');
-    if (raw) return JSON.parse(raw);
-  } catch(e) {}
-  // First time: generate mock data
-  const data = generateMockData();
-  saveData(data);
-  return data;
+// ===================== STORAGE =====================
+function loadData(){
+  try{ const r=localStorage.getItem('metab_eval_v1'); if(r) return JSON.parse(r); }catch(e){}
+  const d=generateMock(); saveData(d); return d;
 }
-function saveData(data) {
-  localStorage.setItem('metab_eval_v1', JSON.stringify(data));
-}
+function saveData(d){ localStorage.setItem('metab_eval_v1',JSON.stringify(d)); }
+let DB=loadData();
 
-let DB = loadData();
+// ===================== ROUTING =====================
+let currentPage='dashboard';
+let archiveTargetId=null, evalTargetResidentId=null;
+let activeCharts=[];
+function destroyCharts(){ activeCharts.forEach(c=>{try{c.destroy();}catch(e){}}); activeCharts=[]; }
 
-// =========================================================
-// ROUTING
-// =========================================================
-let currentPage = 'dashboard';
-let pendingResidentId = null;
-let archiveTargetId = null;
-let evalTargetResidentId = null;
-let activeCharts = [];
-
-function destroyCharts() {
-  activeCharts.forEach(c => { try { c.destroy(); } catch(e){} });
-  activeCharts = [];
-}
-
-function showPage(page) {
+function showPage(page){
   destroyCharts();
-  currentPage = page;
-  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  document.getElementById(`nav-${page}`).classList.add('active');
-  const titles = {
-    dashboard: ['Dashboard','本月評估概況'],
-    residents: ['學員管理','現役與歷史學員'],
-    evaluate: ['填寫評估','選擇學員開始評估'],
-    history: ['歷史紀錄','查看評估紀錄與趨勢'],
-    stats: ['統計分析','整體評估數據分析'],
+  currentPage=page;
+  // Desktop sidebar
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  const navEl=document.getElementById(`nav-${page}`);
+  if(navEl) navEl.classList.add('active');
+  // Mobile bottom nav
+  document.querySelectorAll('.bottom-nav-item').forEach(el=>el.classList.remove('active'));
+  const bnavEl=document.getElementById(`bnav-${page}`);
+  if(bnavEl) bnavEl.classList.add('active');
+  const titles={
+    dashboard:['Dashboard','本月評估概況'],
+    residents:['學員管理','現役與歷史學員'],
+    evaluate:['填寫評估','選擇學員開始評估'],
+    history:['歷史紀錄','查看評估紀錄與趨勢'],
+    stats:['統計分析','整體評估數據分析'],
   };
-  document.getElementById('topbar-title').textContent = titles[page][0];
-  document.getElementById('topbar-sub').textContent = titles[page][1];
-  const renders = { dashboard: renderDashboard, residents: renderResidents, evaluate: renderEvaluate, history: renderHistory, stats: renderStats };
-  document.getElementById('content').innerHTML = '';
-  renders[page]();
+  document.getElementById('topbar-title').textContent=titles[page][0];
+  document.getElementById('topbar-sub').textContent=titles[page][1];
+  document.getElementById('content').innerHTML='';
+  ({dashboard:renderDashboard,residents:renderResidents,evaluate:renderEvaluate,history:renderHistory,stats:renderStats})[page]();
+  window.scrollTo(0,0);
 }
 
-// =========================================================
-// DASHBOARD
-// =========================================================
-function renderDashboard() {
-  const active = DB.residents.filter(r => r.status === 'active');
-  const today = new Date();
-  const content = document.getElementById('content');
-
-  // Stat boxes
-  const totalEvals = DB.evaluations.length;
-  const thisMonth = DB.evaluations.filter(e => {
-    const d = new Date(e.date);
-    return d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
-  }).length;
-  const archived = DB.residents.filter(r => r.status === 'archived').length;
-
-  content.innerHTML = `
-    <div class="grid-4" style="margin-bottom:24px;">
-      <div class="stat-box">
-        <div class="stat-label">現役學員</div>
-        <div class="stat-value">${active.length}</div>
-        <div class="stat-sub">正在追蹤中</div>
+// ===================== DASHBOARD =====================
+function renderDashboard(){
+  const active=DB.residents.filter(r=>r.status==='active');
+  const today=new Date();
+  const totalEvals=DB.evaluations.length;
+  const thisMonth=DB.evaluations.filter(e=>{const d=new Date(e.date);return d.getMonth()===today.getMonth()&&d.getFullYear()===today.getFullYear();}).length;
+  const archived=DB.residents.filter(r=>r.status==='archived').length;
+  document.getElementById('content').innerHTML=`
+    <div class="grid-4" style="margin-bottom:16px;">
+      <div class="stat-box"><div class="stat-label">現役學員</div><div class="stat-value">${active.length}</div><div class="stat-sub">追蹤中</div></div>
+      <div class="stat-box"><div class="stat-label">本月評估</div><div class="stat-value">${thisMonth}</div><div class="stat-sub">已完成</div></div>
+      <div class="stat-box"><div class="stat-label">累積評估</div><div class="stat-value">${totalEvals}</div><div class="stat-sub">筆紀錄</div></div>
+      <div class="stat-box"><div class="stat-label">歷屆學員</div><div class="stat-value">${archived}</div><div class="stat-sub">已結束</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🔔 評估提醒</span>
+        <span style="font-size:11px;color:var(--text3);">距上次評估天數</span>
       </div>
-      <div class="stat-box">
-        <div class="stat-label">本月評估</div>
-        <div class="stat-value">${thisMonth}</div>
-        <div class="stat-sub">筆已完成</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-label">累積評估</div>
-        <div class="stat-value">${totalEvals}</div>
-        <div class="stat-sub">所有紀錄</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-label">歷屆學員</div>
-        <div class="stat-value">${archived}</div>
-        <div class="stat-sub">已結束評估</div>
-      </div>
+      <div class="card-body" id="dash-reminders"></div>
     </div>
     <div class="grid-2">
       <div class="card">
-        <div class="card-header">
-          <span class="card-title">🔔 評估提醒</span>
-          <span style="font-size:11px;color:var(--text3);">上次評估距今</span>
-        </div>
-        <div class="card-body" id="dash-reminders"></div>
+        <div class="card-header"><span class="card-title">📊 現役學員平均雷達</span></div>
+        <div class="card-body"><div class="chart-container"><canvas id="chart-dash-radar"></canvas></div></div>
       </div>
       <div class="card">
-        <div class="card-header">
-          <span class="card-title">📊 本月平均分數</span>
-        </div>
-        <div class="card-body">
-          <div class="chart-container"><canvas id="chart-dash-radar"></canvas></div>
-        </div>
+        <div class="card-header"><span class="card-title">📈 近6個月趨勢</span></div>
+        <div class="card-body"><div class="chart-container"><canvas id="chart-dash-trend"></canvas></div></div>
       </div>
-    </div>
-    <div class="card" style="margin-top:0;">
-      <div class="card-header"><span class="card-title">📈 近6個月評估趨勢（現役學員平均）</span></div>
-      <div class="card-body"><div class="chart-container"><canvas id="chart-dash-trend"></canvas></div></div>
-    </div>
-  `;
+    </div>`;
 
   // Reminders
-  const remDiv = document.getElementById('dash-reminders');
-  if (active.length === 0) {
-    remDiv.innerHTML = '<div class="empty-state"><div class="empty-icon">◎</div>目前沒有現役學員</div>';
-  } else {
-    active.forEach(r => {
-      const evs = DB.evaluations.filter(e => e.residentId === r.id).sort((a,b) => b.date.localeCompare(a.date));
-      const lastEval = evs[0];
-      const daysSince = lastEval
-        ? Math.floor((today - new Date(lastEval.date)) / 86400000)
-        : 999;
-      const status = daysSince >= 30 ? 'red' : daysSince >= 20 ? 'yellow' : 'green';
-      const label = daysSince >= 999 ? '尚未評估' : `${daysSince} 天前`;
-      const cls = `days-${status}`;
-      const avg = lastEval ? (Object.values(lastEval.scores).reduce((a,b)=>a+b,0)/SCORE_ITEMS.length).toFixed(1) : '—';
-      remDiv.innerHTML += `
-        <div class="resident-row" onclick="openEvalModal('${r.id}')">
-          <div class="status-dot ${status}"></div>
-          <div class="resident-avatar ${getAvatarColor(r.name)}">${getInitials(r.name)}</div>
-          <div class="resident-info">
-            <div class="resident-name">${r.name}</div>
-            <div class="resident-meta">${r.year} · 上次平均 ${avg} 分</div>
-          </div>
-          <div class="resident-days ${cls}">${label}</div>
-        </div>`;
+  const rem=document.getElementById('dash-reminders');
+  if(!active.length){ rem.innerHTML='<div class="empty-state"><div class="empty-icon">◎</div>目前沒有現役學員</div>'; }
+  else {
+    active.forEach(r=>{
+      const evs=DB.evaluations.filter(e=>e.residentId===r.id).sort((a,b)=>b.date.localeCompare(a.date));
+      const last=evs[0];
+      const days=last?Math.floor((today-new Date(last.date))/86400000):999;
+      const status=days>=30?'red':days>=20?'yellow':'green';
+      const label=days>=999?'尚未評估':`${days} 天前`;
+      const avg=last?(Object.values(last.scores).reduce((a,b)=>a+b,0)/SCORE_ITEMS.length).toFixed(1):'—';
+      rem.innerHTML+=`<div class="resident-row" onclick="openEvalModal('${r.id}')">
+        <div class="status-dot ${status}"></div>
+        <div class="resident-avatar ${avatarColor(r.name)}">${initials(r.name)}</div>
+        <div class="resident-info">
+          <div class="resident-name">${r.name}</div>
+          <div class="resident-meta">${r.year} · 上次均分 ${avg}</div>
+        </div>
+        <div class="resident-days days-${status}">${label}</div>
+      </div>`;
     });
   }
 
-  // Radar chart - average of latest eval per active resident
-  const catMap = {};
-  SCORE_ITEMS.forEach(si => { if (!catMap[si.category]) catMap[si.category] = []; catMap[si.category].push(si.id); });
-  const cats = Object.keys(catMap);
-  const avgPerCat = cats.map(cat => {
-    const ids = catMap[cat];
-    let total = 0, count = 0;
-    active.forEach(r => {
-      const ev = DB.evaluations.filter(e => e.residentId === r.id).sort((a,b) => b.date.localeCompare(a.date))[0];
-      if (!ev) return;
-      ids.forEach(id => { total += ev.scores[id] || 0; count++; });
-    });
-    return count ? +(total/count).toFixed(1) : 0;
+  // Radar
+  const cats={};
+  SCORE_ITEMS.forEach(si=>{ if(!cats[si.category])cats[si.category]=[]; cats[si.category].push(si.id); });
+  const catKeys=Object.keys(cats);
+  const radarData=catKeys.map(cat=>{
+    const ids=cats[cat]; let tot=0,cnt=0;
+    active.forEach(r=>{ const ev=DB.evaluations.filter(e=>e.residentId===r.id).sort((a,b)=>b.date.localeCompare(a.date))[0]; if(!ev)return; ids.forEach(id=>{tot+=ev.scores[id]||0;cnt++;}); });
+    return cnt?+(tot/cnt).toFixed(1):0;
   });
-  const catLabels = { '臨床知識':'臨床知識', '臨床技能':'臨床技能', '態度溝通':'態度溝通' };
-  if (document.getElementById('chart-dash-radar')) {
-    const rc = new Chart(document.getElementById('chart-dash-radar'), {
-      type: 'radar',
-      data: {
-        labels: cats,
-        datasets: [{
-          label: '平均分數',
-          data: avgPerCat,
-          backgroundColor: 'rgba(26,107,138,0.15)',
-          borderColor: '#1a6b8a',
-          borderWidth: 2,
-          pointBackgroundColor: '#22a5c7',
-          pointRadius: 4,
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        scales: { r: { min: 0, max: 10, ticks: { stepSize: 2, font: { size: 10 } }, pointLabels: { font: { size: 13, family: "'Noto Sans TC'" } } } },
-        plugins: { legend: { display: false } }
-      }
-    });
-    activeCharts.push(rc);
+  if(document.getElementById('chart-dash-radar')){
+    activeCharts.push(new Chart(document.getElementById('chart-dash-radar'),{
+      type:'radar',
+      data:{labels:catKeys,datasets:[{label:'平均',data:radarData,backgroundColor:'rgba(26,107,138,0.15)',borderColor:'#1a6b8a',borderWidth:2,pointBackgroundColor:'#22a5c7',pointRadius:4}]},
+      options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:10,ticks:{stepSize:2,font:{size:10}},pointLabels:{font:{size:13,family:"'Noto Sans TC'"}}}},plugins:{legend:{display:false}}}
+    }));
   }
 
-  // Trend chart - last 6 months average
-  const months = [];
-  const trendData = [];
-  for (let i = 5; i >= 0; i--) {
-    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
-    const ym = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  // Trend
+  const months=[],trendVals=[];
+  for(let i=5;i>=0;i--){
+    const d=new Date(today.getFullYear(),today.getMonth()-i,1);
+    const ym=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
     months.push(`${d.getMonth()+1}月`);
-    const relevant = DB.evaluations.filter(e => e.date.startsWith(ym));
-    const avg = relevant.length
-      ? +(relevant.map(e => Object.values(e.scores).reduce((a,b)=>a+b,0)/SCORE_ITEMS.length).reduce((a,b)=>a+b,0)/relevant.length).toFixed(2)
-      : null;
-    trendData.push(avg);
+    const rel=DB.evaluations.filter(e=>e.date.startsWith(ym));
+    trendVals.push(rel.length?+(rel.map(e=>Object.values(e.scores).reduce((a,b)=>a+b,0)/SCORE_ITEMS.length).reduce((a,b)=>a+b,0)/rel.length).toFixed(2):null);
   }
-  if (document.getElementById('chart-dash-trend')) {
-    const tc = new Chart(document.getElementById('chart-dash-trend'), {
-      type: 'line',
-      data: {
-        labels: months,
-        datasets: [{
-          label: '平均總分',
-          data: trendData,
-          borderColor: '#22a5c7',
-          backgroundColor: 'rgba(34,165,199,0.08)',
-          borderWidth: 2.5,
-          pointRadius: 5,
-          pointBackgroundColor: '#1a6b8a',
-          tension: 0.35,
-          fill: true,
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        scales: {
-          y: { min: 0, max: 10, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 11 } } },
-          x: { grid: { display: false }, ticks: { font: { size: 12 } } }
-        },
-        plugins: { legend: { display: false } }
-      }
-    });
-    activeCharts.push(tc);
+  if(document.getElementById('chart-dash-trend')){
+    activeCharts.push(new Chart(document.getElementById('chart-dash-trend'),{
+      type:'line',
+      data:{labels:months,datasets:[{label:'平均總分',data:trendVals,borderColor:'#22a5c7',backgroundColor:'rgba(34,165,199,0.08)',borderWidth:2.5,pointRadius:5,pointBackgroundColor:'#1a6b8a',tension:0.35,fill:true}]},
+      options:{responsive:true,maintainAspectRatio:false,scales:{y:{min:0,max:10,grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}},plugins:{legend:{display:false}}}
+    }));
   }
 }
 
-// =========================================================
-// RESIDENTS
-// =========================================================
-function renderResidents() {
-  const active = DB.residents.filter(r => r.status === 'active');
-  const archived = DB.residents.filter(r => r.status === 'archived');
-  const content = document.getElementById('content');
-  content.innerHTML = `
+// ===================== RESIDENTS =====================
+function renderResidents(){
+  const active=DB.residents.filter(r=>r.status==='active');
+  const archived=DB.residents.filter(r=>r.status==='archived');
+  const today=new Date();
+  document.getElementById('content').innerHTML=`
     <div class="card">
       <div class="card-header">
         <span class="card-title">現役學員 (${active.length})</span>
-        <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-resident')">+ 新增學員</button>
+        <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-resident')">+ 新增</button>
       </div>
       <div class="card-body" style="padding:0;">
-        <table class="table">
-          <thead><tr>
-            <th>學員</th><th>年級</th><th>開始日期</th><th>評估次數</th><th>最近評估</th><th>操作</th>
-          </tr></thead>
-          <tbody id="active-tbody"></tbody>
-        </table>
+        <div class="table-scroll">
+          <table class="table">
+            <thead><tr>
+              <th>學員</th><th class="hide-mobile">年級</th><th class="hide-mobile">開始日期</th>
+              <th>評估次數</th><th>上次評估</th><th>操作</th>
+            </tr></thead>
+            <tbody id="active-tbody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
     <div class="card">
       <div class="card-header">
         <span class="card-title">歷史學員 (${archived.length})</span>
-        <span style="font-size:12px;color:var(--text3);">評估已結束，紀錄保留</span>
+        <span style="font-size:11px;color:var(--text3);">紀錄已保留</span>
       </div>
       <div class="card-body" style="padding:0;">
-        <table class="table">
-          <thead><tr>
-            <th>學員</th><th>年級</th><th>訓練期間</th><th>評估次數</th><th>平均分數</th><th>操作</th>
-          </tr></thead>
-          <tbody id="archived-tbody"></tbody>
-        </table>
+        <div class="table-scroll">
+          <table class="table">
+            <thead><tr>
+              <th>學員</th><th class="hide-mobile">年級</th><th class="hide-mobile">訓練期間</th>
+              <th>次數</th><th>均分</th><th>操作</th>
+            </tr></thead>
+            <tbody id="archived-tbody"></tbody>
+          </table>
+        </div>
       </div>
-    </div>
-  `;
+    </div>`;
 
-  const today = new Date();
-  const atbody = document.getElementById('active-tbody');
-  active.forEach(r => {
-    const evs = DB.evaluations.filter(e => e.residentId === r.id).sort((a,b) => b.date.localeCompare(a.date));
-    const lastDate = evs[0] ? evs[0].date : '尚未評估';
-    const daysSince = evs[0] ? Math.floor((today - new Date(evs[0].date)) / 86400000) : 999;
-    const statusCls = daysSince >= 30 ? 'days-red' : daysSince >= 20 ? 'days-yellow' : 'days-green';
-    atbody.innerHTML += `<tr>
-      <td><div style="display:flex;align-items:center;gap:10px;">
-        <div class="resident-avatar ${getAvatarColor(r.name)}" style="width:30px;height:30px;font-size:12px;">${getInitials(r.name)}</div>
-        <strong>${r.name}</strong>
+  const atbody=document.getElementById('active-tbody');
+  active.forEach(r=>{
+    const evs=DB.evaluations.filter(e=>e.residentId===r.id).sort((a,b)=>b.date.localeCompare(a.date));
+    const last=evs[0];
+    const days=last?Math.floor((today-new Date(last.date))/86400000):999;
+    const cls=days>=30?'days-red':days>=20?'days-yellow':'days-green';
+    const lbl=last?last.date:'尚未評估';
+    atbody.innerHTML+=`<tr>
+      <td><div style="display:flex;align-items:center;gap:8px;">
+        <div class="resident-avatar ${avatarColor(r.name)}" style="width:28px;height:28px;font-size:11px;">${initials(r.name)}</div>
+        <strong style="font-size:13px;">${r.name}</strong>
       </div></td>
-      <td><span class="tag tag-active">${r.year}</span></td>
-      <td style="font-family:var(--mono);font-size:12px;">${r.startDate}</td>
+      <td class="hide-mobile"><span class="tag tag-active">${r.year}</span></td>
+      <td class="hide-mobile" style="font-family:var(--mono);font-size:11px;">${r.startDate}</td>
       <td style="font-family:var(--mono);">${evs.length}</td>
-      <td><span class="resident-days ${statusCls}" style="font-size:12px;">${lastDate}</span></td>
+      <td><span class="resident-days ${cls}" style="font-size:11px;">${lbl}</span></td>
       <td>
-        <div style="display:flex;gap:6px;">
+        <div class="action-group">
           <button class="btn btn-primary btn-sm" onclick="openEvalModal('${r.id}')">評估</button>
-          <button class="btn btn-secondary btn-sm" onclick="goHistoryResident('${r.id}')">紀錄</button>
-          <button class="btn btn-archive btn-sm" onclick="openArchiveModal('${r.id}')">結束評估</button>
+          <button class="btn btn-secondary btn-sm" onclick="goHistory('${r.id}')">紀錄</button>
+          <button class="btn btn-archive btn-sm hide-mobile" onclick="openArchiveModal('${r.id}')">結束</button>
         </div>
       </td>
     </tr>`;
   });
-  if (!active.length) atbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">◎</div>目前沒有現役學員</div></td></tr>`;
+  if(!active.length) atbody.innerHTML=`<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">◎</div>目前沒有現役學員</div></td></tr>`;
 
-  const chtbody = document.getElementById('archived-tbody');
-  archived.sort((a,b) => b.endDate.localeCompare(a.endDate)).forEach(r => {
-    const evs = DB.evaluations.filter(e => e.residentId === r.id);
-    const avg = evs.length
-      ? (evs.map(e => Object.values(e.scores).reduce((a,b)=>a+b,0)/SCORE_ITEMS.length).reduce((a,b)=>a+b,0)/evs.length).toFixed(1)
-      : '—';
-    chtbody.innerHTML += `<tr>
-      <td><div style="display:flex;align-items:center;gap:10px;">
-        <div class="resident-avatar ${getAvatarColor(r.name)}" style="width:30px;height:30px;font-size:12px;opacity:0.6;">${getInitials(r.name)}</div>
-        <span style="color:var(--text2);">${r.name}</span>
+  const chtbody=document.getElementById('archived-tbody');
+  [...archived].sort((a,b)=>b.endDate.localeCompare(a.endDate)).forEach(r=>{
+    const evs=DB.evaluations.filter(e=>e.residentId===r.id);
+    const avg=evs.length?(evs.map(e=>Object.values(e.scores).reduce((a,b)=>a+b,0)/SCORE_ITEMS.length).reduce((a,b)=>a+b,0)/evs.length).toFixed(1):'—';
+    chtbody.innerHTML+=`<tr>
+      <td><div style="display:flex;align-items:center;gap:8px;">
+        <div class="resident-avatar ${avatarColor(r.name)}" style="width:28px;height:28px;font-size:11px;opacity:0.6;">${initials(r.name)}</div>
+        <span style="color:var(--text2);font-size:13px;">${r.name}</span>
       </div></td>
-      <td><span class="tag tag-archived">${r.year}</span></td>
-      <td style="font-family:var(--mono);font-size:11px;color:var(--text3);">${r.startDate} ～ ${r.endDate}</td>
+      <td class="hide-mobile"><span class="tag tag-archived">${r.year}</span></td>
+      <td class="hide-mobile" style="font-family:var(--mono);font-size:11px;color:var(--text3);">${r.startDate}～${r.endDate}</td>
       <td style="font-family:var(--mono);">${evs.length}</td>
-      <td><strong style="font-family:var(--mono);">${avg}</strong> / 10</td>
-      <td><button class="btn btn-secondary btn-sm" onclick="goHistoryResident('${r.id}')">查看紀錄</button></td>
+      <td><strong style="font-family:var(--mono);">${avg}</strong></td>
+      <td><button class="btn btn-secondary btn-sm" onclick="goHistory('${r.id}')">紀錄</button></td>
     </tr>`;
   });
 }
 
-// =========================================================
-// EVALUATE PAGE
-// =========================================================
-function renderEvaluate() {
-  const active = DB.residents.filter(r => r.status === 'active');
-  const content = document.getElementById('content');
-  content.innerHTML = `
+// ===================== EVALUATE PAGE =====================
+function renderEvaluate(){
+  const active=DB.residents.filter(r=>r.status==='active');
+  document.getElementById('content').innerHTML=`
     <div class="card">
       <div class="card-header"><span class="card-title">選擇學員</span></div>
       <div class="card-body">
-        ${active.length === 0
-          ? '<div class="empty-state"><div class="empty-icon">◎</div>目前沒有現役學員</div>'
-          : active.map(r => {
-            const evs = DB.evaluations.filter(e => e.residentId === r.id).sort((a,b) => b.date.localeCompare(a.date));
-            const days = evs[0] ? Math.floor((new Date() - new Date(evs[0].date)) / 86400000) : 999;
-            const status = days >= 30 ? 'red' : days >= 20 ? 'yellow' : 'green';
+        ${!active.length?'<div class="empty-state"><div class="empty-icon">◎</div>目前沒有現役學員</div>':
+          active.map(r=>{
+            const evs=DB.evaluations.filter(e=>e.residentId===r.id).sort((a,b)=>b.date.localeCompare(a.date));
+            const days=evs[0]?Math.floor((new Date()-new Date(evs[0].date))/86400000):999;
+            const status=days>=30?'red':days>=20?'yellow':'green';
             return `<div class="resident-row" onclick="openEvalModal('${r.id}')">
               <div class="status-dot ${status}"></div>
-              <div class="resident-avatar ${getAvatarColor(r.name)}">${getInitials(r.name)}</div>
+              <div class="resident-avatar ${avatarColor(r.name)}">${initials(r.name)}</div>
               <div class="resident-info">
                 <div class="resident-name">${r.name}</div>
                 <div class="resident-meta">${r.year} · 共 ${evs.length} 次評估</div>
               </div>
-              <button class="btn btn-primary btn-sm">開始評估 →</button>
+              <button class="btn btn-primary btn-sm">開始 →</button>
             </div>`;
-          }).join('')
-        }
+          }).join('')}
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
-// =========================================================
-// HISTORY PAGE
-// =========================================================
-let historySelectedId = null;
-
-function renderHistory() {
-  const all = [...DB.residents].sort((a,b) => {
-    if (a.status === b.status) return b.startDate.localeCompare(a.startDate);
-    return a.status === 'active' ? -1 : 1;
-  });
-  const content = document.getElementById('content');
-  content.innerHTML = `
-    <div class="grid-2" style="align-items:start;">
-      <div class="card" style="margin-bottom:0;">
-        <div class="card-header"><span class="card-title">選擇學員</span></div>
-        <div class="card-body" style="padding:8px 12px;" id="history-list"></div>
-      </div>
-      <div id="history-detail">
-        <div class="empty-state" style="padding:60px 20px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);">
-          <div class="empty-icon">◇</div>
-          <div>選擇左側學員查看評估紀錄</div>
-        </div>
-      </div>
+// ===================== HISTORY PAGE =====================
+let historySelId=null;
+function renderHistory(){
+  const all=[...DB.residents].sort((a,b)=>a.status===b.status?b.startDate.localeCompare(a.startDate):a.status==='active'?-1:1);
+  document.getElementById('content').innerHTML=`
+    <div class="card">
+      <div class="card-header"><span class="card-title">選擇學員</span></div>
+      <div class="card-body" style="padding:8px 12px;" id="history-list"></div>
     </div>
-  `;
-
-  const list = document.getElementById('history-list');
-  all.forEach(r => {
-    const evs = DB.evaluations.filter(e => e.residentId === r.id);
-    list.innerHTML += `
-      <div class="resident-row" onclick="selectHistoryResident('${r.id}')" id="hlist-${r.id}" style="padding:10px 8px;">
-        <div class="resident-avatar ${getAvatarColor(r.name)}" style="width:32px;height:32px;font-size:12px;${r.status==='archived'?'opacity:0.6;':''}">${getInitials(r.name)}</div>
-        <div class="resident-info">
-          <div class="resident-name" style="font-size:13px;">${r.name}</div>
-          <div class="resident-meta">${r.year} · ${evs.length} 次評估 · <span class="tag ${r.status==='active'?'tag-active':'tag-archived'}">${r.status==='active'?'現役':'歷史'}</span></div>
-        </div>
-      </div>`;
+    <div id="history-detail"></div>`;
+  const list=document.getElementById('history-list');
+  all.forEach(r=>{
+    const evs=DB.evaluations.filter(e=>e.residentId===r.id);
+    list.innerHTML+=`<div class="resident-row" onclick="selectHistory('${r.id}')" id="hlist-${r.id}" style="padding:10px 6px;">
+      <div class="resident-avatar ${avatarColor(r.name)}" style="width:32px;height:32px;font-size:12px;${r.status==='archived'?'opacity:0.6;':''}">${initials(r.name)}</div>
+      <div class="resident-info">
+        <div class="resident-name" style="font-size:13px;">${r.name}</div>
+        <div class="resident-meta">${r.year} · ${evs.length} 次 · <span class="tag ${r.status==='active'?'tag-active':'tag-archived'}">${r.status==='active'?'現役':'歷史'}</span></div>
+      </div>
+    </div>`;
   });
-
-  if (historySelectedId) selectHistoryResident(historySelectedId);
+  if(historySelId) selectHistory(historySelId);
 }
 
-function selectHistoryResident(id) {
-  historySelectedId = id;
-  document.querySelectorAll('[id^="hlist-"]').forEach(el => el.style.background = '');
-  const sel = document.getElementById(`hlist-${id}`);
-  if (sel) sel.style.background = 'var(--accent-light)';
-  const r = DB.residents.find(x => x.id === id);
-  const evs = DB.evaluations.filter(e => e.residentId === id).sort((a,b) => a.date.localeCompare(b.date));
-  const detail = document.getElementById('history-detail');
+function goHistory(id){ historySelId=id; showPage('history'); }
 
-  if (!evs.length) {
-    detail.innerHTML = `<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-icon">◎</div>此學員尚無評估紀錄</div></div></div>`;
-    return;
-  }
-
-  const avgAll = (evs.map(e => Object.values(e.scores).reduce((a,b)=>a+b,0)/SCORE_ITEMS.length).reduce((a,b)=>a+b,0)/evs.length).toFixed(1);
-  const lastAvg = (Object.values(evs[evs.length-1].scores).reduce((a,b)=>a+b,0)/SCORE_ITEMS.length).toFixed(1);
-
-  detail.innerHTML = `
-    <div class="card" style="margin-bottom:16px;">
+function selectHistory(id){
+  historySelId=id;
+  document.querySelectorAll('[id^="hlist-"]').forEach(el=>el.style.background='');
+  const sel=document.getElementById(`hlist-${id}`);
+  if(sel) sel.style.background='var(--accent-light)';
+  const r=DB.residents.find(x=>x.id===id);
+  const evs=DB.evaluations.filter(e=>e.residentId===id).sort((a,b)=>a.date.localeCompare(b.date));
+  const detail=document.getElementById('history-detail');
+  if(!evs.length){ detail.innerHTML=`<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-icon">◎</div>此學員尚無評估紀錄</div></div></div>`; return; }
+  destroyCharts();
+  const avgAll=(evs.map(e=>Object.values(e.scores).reduce((a,b)=>a+b,0)/SCORE_ITEMS.length).reduce((a,b)=>a+b,0)/evs.length).toFixed(1);
+  detail.innerHTML=`
+    <div class="card">
       <div class="card-header">
-        <span class="card-title">${r.name} - 評估趨勢</span>
-        <span style="font-size:12px;color:var(--text3);">共 ${evs.length} 次 · 平均 ${avgAll} 分</span>
+        <span class="card-title">${r.name} — 趨勢</span>
+        <span style="font-size:12px;color:var(--text3);">${evs.length} 次 · 均 ${avgAll} 分</span>
       </div>
-      <div class="card-body">
-        <div class="chart-container"><canvas id="chart-history-trend"></canvas></div>
-      </div>
+      <div class="card-body"><div class="chart-container"><canvas id="chart-h-trend"></canvas></div></div>
     </div>
-    <div class="card" style="margin-bottom:16px;">
-      <div class="card-header"><span class="card-title">最近評估 - 各項分析</span></div>
-      <div class="card-body">
-        <div class="chart-container-sm"><canvas id="chart-history-bar"></canvas></div>
-      </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">最近評估各項分數</span></div>
+      <div class="card-body"><div class="chart-container-sm"><canvas id="chart-h-bar"></canvas></div></div>
     </div>
     <div class="card">
       <div class="card-header">
-        <span class="card-title">評估紀錄列表</span>
-        ${r.status === 'active' ? `<button class="btn btn-primary btn-sm" onclick="openEvalModal('${r.id}')">+ 新增評估</button>` : ''}
+        <span class="card-title">評估列表</span>
+        ${r.status==='active'?`<button class="btn btn-primary btn-sm" onclick="openEvalModal('${r.id}')">+ 新增</button>`:''}
       </div>
       <div class="card-body" style="padding:0;">
-        <table class="table">
-          <thead><tr><th>日期</th><th>平均分</th><th>達成項目</th><th>評語</th><th></th></tr></thead>
-          <tbody>
-            ${[...evs].reverse().map(e => {
-              const avg = (Object.values(e.scores).reduce((a,b)=>a+b,0)/SCORE_ITEMS.length).toFixed(1);
-              const checks = Object.values(e.checks).filter(Boolean).length;
-              const cls = avg >= 7 ? 'high' : avg >= 5 ? 'mid' : 'low';
-              return `<tr>
-                <td style="font-family:var(--mono);font-size:12px;">${e.date}</td>
-                <td><span class="score-badge ${cls}">${avg}</span></td>
-                <td style="font-family:var(--mono);">${checks}/${CHECK_ITEMS.length}</td>
-                <td style="font-size:12px;color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${e.comment||'—'}</td>
-                <td><button class="btn btn-secondary btn-sm" onclick="showEvalDetail('${e.id}')">詳情</button></td>
-              </tr>`;
-            }).join('')}
-          </tbody>
-        </table>
+        <div class="table-scroll"><table class="table">
+          <thead><tr><th>日期</th><th>均分</th><th>達成</th><th class="hide-mobile">評語</th><th></th></tr></thead>
+          <tbody>${[...evs].reverse().map(e=>{
+            const avg=(Object.values(e.scores).reduce((a,b)=>a+b,0)/SCORE_ITEMS.length).toFixed(1);
+            const chk=Object.values(e.checks).filter(Boolean).length;
+            const cls=avg>=7?'high':avg>=5?'mid':'low';
+            return `<tr>
+              <td style="font-family:var(--mono);font-size:12px;">${e.date}</td>
+              <td><span class="score-badge ${cls}">${avg}</span></td>
+              <td style="font-family:var(--mono);">${chk}/${CHECK_ITEMS.length}</td>
+              <td class="hide-mobile" style="font-size:12px;color:var(--text2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${e.comment||'—'}</td>
+              <td><button class="btn btn-secondary btn-sm" onclick="showDetail('${e.id}')">詳情</button></td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table></div>
       </div>
-    </div>
-  `;
+    </div>`;
 
   // Trend chart
-  destroyCharts();
-  const tc = new Chart(document.getElementById('chart-history-trend'), {
-    type: 'line',
-    data: {
-      labels: evs.map(e => e.date.slice(5)),
-      datasets: SCORE_ITEMS.map((si, i) => ({
-        label: si.label,
-        data: evs.map(e => e.scores[si.id]),
-        borderColor: `hsl(${i*33},60%,50%)`,
-        backgroundColor: 'transparent',
-        borderWidth: 1.5,
-        pointRadius: 3,
-        tension: 0.3,
-      }))
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      scales: {
-        y: { min: 0, max: 10, grid: { color: 'rgba(0,0,0,0.05)' } },
-        x: { grid: { display: false } }
-      },
-      plugins: {
-        legend: { display: true, position: 'bottom', labels: { font: { size: 10, family: "'Noto Sans TC'" }, boxWidth: 12, padding: 8 } }
-      }
-    }
-  });
-  activeCharts.push(tc);
-
-  // Bar chart - last eval
-  const lastEval = evs[evs.length-1];
-  const bc = new Chart(document.getElementById('chart-history-bar'), {
-    type: 'bar',
-    data: {
-      labels: SCORE_ITEMS.map(si => si.label),
-      datasets: [{
-        label: '最近評估',
-        data: SCORE_ITEMS.map(si => lastEval.scores[si.id]),
-        backgroundColor: SCORE_ITEMS.map(si => {
-          const v = lastEval.scores[si.id];
-          return v >= 7 ? 'rgba(61,170,114,0.7)' : v >= 5 ? 'rgba(224,154,48,0.7)' : 'rgba(224,82,82,0.7)';
-        }),
-        borderRadius: 4,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      indexAxis: 'y',
-      scales: {
-        x: { min: 0, max: 10, grid: { color: 'rgba(0,0,0,0.04)' } },
-        y: { ticks: { font: { size: 11, family: "'Noto Sans TC'" } } }
-      },
-      plugins: { legend: { display: false } }
-    }
-  });
-  activeCharts.push(bc);
+  activeCharts.push(new Chart(document.getElementById('chart-h-trend'),{
+    type:'line',
+    data:{labels:evs.map(e=>e.date.slice(5)),datasets:SCORE_ITEMS.map((si,i)=>({
+      label:si.label,data:evs.map(e=>e.scores[si.id]),
+      borderColor:`hsl(${i*33},60%,50%)`,backgroundColor:'transparent',
+      borderWidth:1.5,pointRadius:3,tension:0.3,
+    }))},
+    options:{responsive:true,maintainAspectRatio:false,
+      scales:{y:{min:0,max:10,grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}},
+      plugins:{legend:{display:true,position:'bottom',labels:{font:{size:10,family:"'Noto Sans TC'"},boxWidth:12,padding:6}}}}
+  }));
+  // Bar chart
+  const last=evs[evs.length-1];
+  activeCharts.push(new Chart(document.getElementById('chart-h-bar'),{
+    type:'bar',
+    data:{labels:SCORE_ITEMS.map(si=>si.label),datasets:[{
+      label:'最近評估',data:SCORE_ITEMS.map(si=>last.scores[si.id]),
+      backgroundColor:SCORE_ITEMS.map(si=>{const v=last.scores[si.id];return v>=7?'rgba(61,170,114,0.7)':v>=5?'rgba(224,154,48,0.7)':'rgba(224,82,82,0.7)';}),
+      borderRadius:4,
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      scales:{x:{min:0,max:10,grid:{color:'rgba(0,0,0,0.04)'}},y:{ticks:{font:{size:11,family:"'Noto Sans TC'"}}}},
+      plugins:{legend:{display:false}}}
+  }));
 }
 
-function goHistoryResident(id) {
-  historySelectedId = id;
-  showPage('history');
-}
-
-// =========================================================
-// STATS PAGE
-// =========================================================
-function renderStats() {
-  const content = document.getElementById('content');
-  content.innerHTML = `
+// ===================== STATS PAGE =====================
+function renderStats(){
+  document.getElementById('content').innerHTML=`
     <div class="grid-2">
       <div class="card">
         <div class="card-header"><span class="card-title">各屆學員平均分數</span></div>
-        <div class="card-body"><div class="chart-container"><canvas id="chart-stats-cohort"></canvas></div></div>
+        <div class="card-body"><div class="chart-container"><canvas id="c-cohort"></canvas></div></div>
       </div>
       <div class="card">
-        <div class="card-header"><span class="card-title">各評估項目歷年平均</span></div>
-        <div class="card-body"><div class="chart-container"><canvas id="chart-stats-items"></canvas></div></div>
+        <div class="card-header"><span class="card-title">各項目歷年平均（雷達）</span></div>
+        <div class="card-body"><div class="chart-container"><canvas id="c-radar"></canvas></div></div>
       </div>
     </div>
     <div class="grid-2">
       <div class="card">
-        <div class="card-header"><span class="card-title">每月評估次數（2020–2026）</span></div>
-        <div class="card-body"><div class="chart-container"><canvas id="chart-stats-monthly"></canvas></div></div>
+        <div class="card-header"><span class="card-title">每月評估次數</span></div>
+        <div class="card-body"><div class="chart-container"><canvas id="c-monthly"></canvas></div></div>
       </div>
       <div class="card">
         <div class="card-header"><span class="card-title">勾選項目達成率</span></div>
-        <div class="card-body"><div class="chart-container"><canvas id="chart-stats-checks"></canvas></div></div>
+        <div class="card-body"><div class="chart-container"><canvas id="c-checks"></canvas></div></div>
       </div>
     </div>
     <div class="card">
-      <div class="card-header"><span class="card-title">所有學員歷次評估平均分分佈</span></div>
-      <div class="card-body"><div class="chart-container-lg"><canvas id="chart-stats-dist"></canvas></div></div>
-    </div>
-  `;
-
+      <div class="card-header"><span class="card-title">評估平均分分佈</span></div>
+      <div class="card-body"><div class="chart-container-lg"><canvas id="c-dist"></canvas></div></div>
+    </div>`;
   destroyCharts();
 
-  // Cohort chart - average per resident
-  const allR = DB.residents.filter(r => DB.evaluations.some(e => e.residentId === r.id));
-  const cohortLabels = allR.map(r => r.name);
-  const cohortData = allR.map(r => {
-    const evs = DB.evaluations.filter(e => e.residentId === r.id);
-    return +(evs.map(e => Object.values(e.scores).reduce((a,b)=>a+b,0)/SCORE_ITEMS.length).reduce((a,b)=>a+b,0)/evs.length).toFixed(2);
-  });
-  const cohortColors = allR.map(r => r.status === 'active' ? 'rgba(26,107,138,0.7)' : 'rgba(143,160,176,0.5)');
-  const c1 = new Chart(document.getElementById('chart-stats-cohort'), {
-    type: 'bar',
-    data: {
-      labels: cohortLabels,
-      datasets: [{ label: '平均分', data: cohortData, backgroundColor: cohortColors, borderRadius: 4 }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      scales: {
-        y: { min: 0, max: 10 },
-        x: { ticks: { font: { size: 10, family: "'Noto Sans TC'" } } }
-      },
-      plugins: { legend: { display: false } }
-    }
-  });
-  activeCharts.push(c1);
+  // Cohort
+  const allR=DB.residents.filter(r=>DB.evaluations.some(e=>e.residentId===r.id));
+  const cohortColors=allR.map(r=>r.status==='active'?'rgba(26,107,138,0.75)':'rgba(143,160,176,0.5)');
+  activeCharts.push(new Chart(document.getElementById('c-cohort'),{
+    type:'bar',
+    data:{labels:allR.map(r=>r.name),datasets:[{label:'均分',
+      data:allR.map(r=>{const evs=DB.evaluations.filter(e=>e.residentId===r.id);return evs.length?+(evs.map(e=>Object.values(e.scores).reduce((a,b)=>a+b,0)/SCORE_ITEMS.length).reduce((a,b)=>a+b,0)/evs.length).toFixed(2):0;}),
+      backgroundColor:cohortColors,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,scales:{y:{min:0,max:10},x:{ticks:{font:{size:10,family:"'Noto Sans TC'"}}}},plugins:{legend:{display:false}}}
+  }));
 
-  // Items chart - all-time average per score item
-  const itemAvgs = SCORE_ITEMS.map(si => {
-    const all = DB.evaluations.map(e => e.scores[si.id]).filter(Boolean);
-    return +(all.reduce((a,b)=>a+b,0)/all.length).toFixed(2);
-  });
-  const c2 = new Chart(document.getElementById('chart-stats-items'), {
-    type: 'radar',
-    data: {
-      labels: SCORE_ITEMS.map(si => si.label),
-      datasets: [{
-        label: '歷年平均',
-        data: itemAvgs,
-        backgroundColor: 'rgba(34,165,199,0.15)',
-        borderColor: '#22a5c7',
-        borderWidth: 2,
-        pointBackgroundColor: '#1a6b8a',
-        pointRadius: 3,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      scales: { r: { min: 0, max: 10, ticks: { stepSize: 2, font: { size: 9 } }, pointLabels: { font: { size: 10, family: "'Noto Sans TC'" } } } },
-      plugins: { legend: { display: false } }
-    }
-  });
-  activeCharts.push(c2);
+  // Radar
+  const itemAvgs=SCORE_ITEMS.map(si=>{const all=DB.evaluations.map(e=>e.scores[si.id]).filter(Boolean);return+(all.reduce((a,b)=>a+b,0)/all.length).toFixed(2);});
+  activeCharts.push(new Chart(document.getElementById('c-radar'),{
+    type:'radar',
+    data:{labels:SCORE_ITEMS.map(si=>si.label),datasets:[{label:'歷年均',data:itemAvgs,backgroundColor:'rgba(34,165,199,0.15)',borderColor:'#22a5c7',borderWidth:2,pointBackgroundColor:'#1a6b8a',pointRadius:3}]},
+    options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:10,ticks:{stepSize:2,font:{size:9}},pointLabels:{font:{size:10,family:"'Noto Sans TC'"}}}},plugins:{legend:{display:false}}}
+  }));
 
-  // Monthly count
-  const monthlyCounts = {};
-  DB.evaluations.forEach(e => {
-    const ym = e.date.slice(0,7);
-    monthlyCounts[ym] = (monthlyCounts[ym] || 0) + 1;
-  });
-  const sortedYMs = Object.keys(monthlyCounts).sort();
-  const c3 = new Chart(document.getElementById('chart-stats-monthly'), {
-    type: 'bar',
-    data: {
-      labels: sortedYMs.map(ym => ym.slice(2)),
-      datasets: [{ label: '評估次數', data: sortedYMs.map(ym => monthlyCounts[ym]), backgroundColor: 'rgba(26,107,138,0.5)', borderRadius: 2 }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      scales: {
-        y: { beginAtZero: true, ticks: { stepSize: 1 } },
-        x: { ticks: { font: { size: 9 }, maxRotation: 45 } }
-      },
-      plugins: { legend: { display: false } }
-    }
-  });
-  activeCharts.push(c3);
+  // Monthly
+  const mc={};
+  DB.evaluations.forEach(e=>{const ym=e.date.slice(0,7);mc[ym]=(mc[ym]||0)+1;});
+  const yms=Object.keys(mc).sort();
+  activeCharts.push(new Chart(document.getElementById('c-monthly'),{
+    type:'bar',
+    data:{labels:yms.map(y=>y.slice(2)),datasets:[{label:'次數',data:yms.map(y=>mc[y]),backgroundColor:'rgba(26,107,138,0.5)',borderRadius:2}]},
+    options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,ticks:{stepSize:1}},x:{ticks:{font:{size:9},maxRotation:45}}},plugins:{legend:{display:false}}}
+  }));
 
-  // Checkboxes achievement rate
-  const checkRates = CHECK_ITEMS.map(ci => {
-    const total = DB.evaluations.length;
-    const done = DB.evaluations.filter(e => e.checks[ci.id]).length;
-    return +((done/total)*100).toFixed(1);
-  });
-  const c4 = new Chart(document.getElementById('chart-stats-checks'), {
-    type: 'doughnut',
-    data: {
-      labels: CHECK_ITEMS.map(ci => ci.label),
-      datasets: [{
-        data: checkRates,
-        backgroundColor: ['rgba(26,107,138,0.8)','rgba(34,165,199,0.8)','rgba(61,170,114,0.8)','rgba(224,154,48,0.8)'],
-        borderWidth: 2,
-        borderColor: '#fff',
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'bottom', labels: { font: { size: 11, family: "'Noto Sans TC'" }, padding: 12 } },
-        tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.raw}%` } }
-      }
-    }
-  });
-  activeCharts.push(c4);
+  // Checks doughnut
+  const checkRates=CHECK_ITEMS.map(ci=>{const done=DB.evaluations.filter(e=>e.checks[ci.id]).length;return+((done/DB.evaluations.length)*100).toFixed(1);});
+  activeCharts.push(new Chart(document.getElementById('c-checks'),{
+    type:'doughnut',
+    data:{labels:CHECK_ITEMS.map(ci=>ci.label),datasets:[{data:checkRates,backgroundColor:['rgba(26,107,138,0.8)','rgba(34,165,199,0.8)','rgba(61,170,114,0.8)','rgba(224,154,48,0.8)'],borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11,family:"'Noto Sans TC'"},padding:10}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.raw}%`}}}}
+  }));
 
   // Distribution
-  const allAvgs = DB.evaluations.map(e => +(Object.values(e.scores).reduce((a,b)=>a+b,0)/SCORE_ITEMS.length).toFixed(1));
-  const buckets = {};
-  for (let v = 1; v <= 10; v += 0.5) buckets[v.toFixed(1)] = 0;
-  allAvgs.forEach(v => { const k = (Math.round(v*2)/2).toFixed(1); if(buckets[k]!==undefined) buckets[k]++; });
-  const c5 = new Chart(document.getElementById('chart-stats-dist'), {
-    type: 'bar',
-    data: {
-      labels: Object.keys(buckets),
-      datasets: [{
-        label: '評估次數',
-        data: Object.values(buckets),
-        backgroundColor: Object.keys(buckets).map(k => {
-          const v = parseFloat(k);
-          return v >= 7 ? 'rgba(61,170,114,0.7)' : v >= 5 ? 'rgba(224,154,48,0.7)' : 'rgba(224,82,82,0.7)';
-        }),
-        borderRadius: 4,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      scales: {
-        y: { beginAtZero: true, ticks: { stepSize: 1 } },
-        x: { ticks: { font: { size: 11 } } }
-      },
-      plugins: { legend: { display: false }, tooltip: { callbacks: { title: ctx => `平均 ${ctx[0].label} 分` } } }
-    }
-  });
-  activeCharts.push(c5);
+  const allAvgs=DB.evaluations.map(e=>+(Object.values(e.scores).reduce((a,b)=>a+b,0)/SCORE_ITEMS.length).toFixed(1));
+  const bkts={};
+  for(let v=1;v<=10;v+=0.5) bkts[v.toFixed(1)]=0;
+  allAvgs.forEach(v=>{const k=(Math.round(v*2)/2).toFixed(1);if(bkts[k]!==undefined)bkts[k]++;});
+  activeCharts.push(new Chart(document.getElementById('c-dist'),{
+    type:'bar',
+    data:{labels:Object.keys(bkts),datasets:[{label:'次數',data:Object.values(bkts),
+      backgroundColor:Object.keys(bkts).map(k=>{const v=parseFloat(k);return v>=7?'rgba(61,170,114,0.7)':v>=5?'rgba(224,154,48,0.7)':'rgba(224,82,82,0.7)';}),
+      borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,ticks:{stepSize:1}},x:{ticks:{font:{size:11}}}},plugins:{legend:{display:false},tooltip:{callbacks:{title:ctx=>`平均 ${ctx[0].label} 分`}}}}
+  }));
 }
 
-// =========================================================
-// EVAL MODAL
-// =========================================================
-function openEvalModal(residentId) {
-  evalTargetResidentId = residentId;
-  const r = DB.residents.find(x => x.id === residentId);
-  document.getElementById('eval-modal-title').textContent = `填寫評估 — ${r.name}`;
-  const today = new Date().toISOString().split('T')[0];
-  let body = `
-    <div class="form-group">
-      <label class="form-label">評估日期</label>
-      <input class="form-input" type="date" id="eval-date" value="${today}" />
-    </div>
-    <hr class="divider">
-    <div class="section-heading">計分項目（1–10）</div>
-  `;
-  const cats = {};
-  SCORE_ITEMS.forEach(si => { if (!cats[si.category]) cats[si.category] = []; cats[si.category].push(si); });
-  Object.entries(cats).forEach(([cat, items]) => {
-    body += `<div style="font-size:12px;font-weight:700;color:var(--accent);margin:12px 0 8px;letter-spacing:0.5px;">${cat}</div>`;
-    items.forEach(si => {
-      body += `
-        <div class="score-item">
-          <div class="score-label">
-            <span>${si.label}</span>
-            <span class="score-num" id="val-${si.id}">5</span>
-          </div>
-          <input type="range" class="score-slider" min="1" max="10" value="5" id="sl-${si.id}"
-            oninput="updateSlider('${si.id}',this.value)" />
-          <div class="score-ticks"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span></div>
-        </div>`;
+// ===================== EVAL MODAL =====================
+function openEvalModal(residentId){
+  evalTargetResidentId=residentId;
+  const r=DB.residents.find(x=>x.id===residentId);
+  document.getElementById('eval-modal-title').textContent=`${r.name} — 評估`;
+  const today=new Date().toISOString().split('T')[0];
+  const cats={};
+  SCORE_ITEMS.forEach(si=>{ if(!cats[si.category])cats[si.category]=[]; cats[si.category].push(si); });
+  let body=`<div class="form-group"><label class="form-label">評估日期</label><input class="form-input" type="date" id="eval-date" value="${today}"/></div><hr class="divider"><div class="section-heading">計分項目（1–10）</div>`;
+  Object.entries(cats).forEach(([cat,items])=>{
+    body+=`<div style="font-size:12px;font-weight:700;color:var(--accent);margin:14px 0 8px;letter-spacing:0.5px;">${cat}</div>`;
+    items.forEach(si=>{
+      body+=`<div class="score-item">
+        <div class="score-label"><span>${si.label}</span><span class="score-num" id="val-${si.id}">5</span></div>
+        <input type="range" class="score-slider" min="1" max="10" value="5" id="sl-${si.id}" oninput="updateSlider('${si.id}',this.value)"/>
+        <div class="score-ticks"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span></div>
+      </div>`;
     });
   });
-  body += `
+  body+=`<hr class="divider"><div class="section-heading">勾選項目</div>
+    ${CHECK_ITEMS.map(ci=>`<div class="check-item"><input type="checkbox" id="ck-${ci.id}"/><label for="ck-${ci.id}">${ci.label}</label></div>`).join('')}
     <hr class="divider">
-    <div class="section-heading">勾選項目</div>
-    ${CHECK_ITEMS.map(ci => `
-      <div class="check-item">
-        <input type="checkbox" id="ck-${ci.id}" />
-        <label for="ck-${ci.id}">${ci.label}</label>
-      </div>`).join('')}
-    <hr class="divider">
-    <div class="form-group">
-      <label class="form-label">評語 / 備註</label>
-      <textarea class="form-input" id="eval-comment" placeholder="輸入整體評語或具體建議..."></textarea>
-    </div>
-  `;
-  document.getElementById('eval-modal-body').innerHTML = body;
+    <div class="form-group"><label class="form-label">評語 / 備註</label><textarea class="form-input" id="eval-comment" placeholder="輸入評語..."></textarea></div>`;
+  document.getElementById('eval-modal-body').innerHTML=body;
   openModal('modal-evaluate');
 }
 
-function updateSlider(id, val) {
-  document.getElementById(`val-${id}`).textContent = val;
-  const sl = document.getElementById(`sl-${id}`);
-  const pct = ((val-1)/9*100).toFixed(1);
-  sl.style.background = `linear-gradient(to right, var(--accent2) 0%, var(--accent2) ${pct}%, var(--border) ${pct}%)`;
+function updateSlider(id,val){
+  document.getElementById(`val-${id}`).textContent=val;
+  const sl=document.getElementById(`sl-${id}`);
+  const pct=((val-1)/9*100).toFixed(1);
+  sl.style.background=`linear-gradient(to right,var(--accent2) 0%,var(--accent2) ${pct}%,var(--border) ${pct}%)`;
 }
 
-function saveEvaluation() {
-  const scores = {};
-  SCORE_ITEMS.forEach(si => { scores[si.id] = parseInt(document.getElementById(`sl-${si.id}`).value); });
-  const checks = {};
-  CHECK_ITEMS.forEach(ci => { checks[ci.id] = document.getElementById(`ck-${ci.id}`).checked; });
-  const ev = {
-    id: `e_${Date.now()}`,
-    residentId: evalTargetResidentId,
-    date: document.getElementById('eval-date').value,
-    scores, checks,
-    comment: document.getElementById('eval-comment').value,
-  };
-  DB.evaluations.push(ev);
-  saveData(DB);
-  closeModal('modal-evaluate');
-  showPage(currentPage);
+function saveEvaluation(){
+  const scores={};
+  SCORE_ITEMS.forEach(si=>{ scores[si.id]=parseInt(document.getElementById(`sl-${si.id}`).value); });
+  const checks={};
+  CHECK_ITEMS.forEach(ci=>{ checks[ci.id]=document.getElementById(`ck-${ci.id}`).checked; });
+  DB.evaluations.push({
+    id:`e_${Date.now()}`,residentId:evalTargetResidentId,
+    date:document.getElementById('eval-date').value,
+    scores,checks,comment:document.getElementById('eval-comment').value,
+  });
+  saveData(DB); closeModal('modal-evaluate'); showPage(currentPage);
 }
 
-// =========================================================
-// EVAL DETAIL MODAL
-// =========================================================
-function showEvalDetail(evalId) {
-  const e = DB.evaluations.find(x => x.id === evalId);
-  const r = DB.residents.find(x => x.id === e.residentId);
-  const avg = (Object.values(e.scores).reduce((a,b)=>a+b,0)/SCORE_ITEMS.length).toFixed(1);
-  document.getElementById('detail-modal-title').textContent = `${r.name} - ${e.date} 評估詳情`;
-  let body = `
-    <div style="display:flex;gap:16px;margin-bottom:16px;">
-      <div class="stat-box" style="flex:1;padding:14px;">
-        <div class="stat-label">平均分數</div>
-        <div class="stat-value" style="font-size:24px;">${avg}</div>
-      </div>
-      <div class="stat-box" style="flex:1;padding:14px;">
-        <div class="stat-label">達成項目</div>
-        <div class="stat-value" style="font-size:24px;">${Object.values(e.checks).filter(Boolean).length}/${CHECK_ITEMS.length}</div>
-      </div>
+// ===================== DETAIL MODAL =====================
+function showDetail(evalId){
+  const e=DB.evaluations.find(x=>x.id===evalId);
+  const r=DB.residents.find(x=>x.id===e.residentId);
+  const avg=(Object.values(e.scores).reduce((a,b)=>a+b,0)/SCORE_ITEMS.length).toFixed(1);
+  document.getElementById('detail-modal-title').textContent=`${r.name} · ${e.date}`;
+  document.getElementById('detail-modal-body').innerHTML=`
+    <div style="display:flex;gap:12px;margin-bottom:16px;">
+      <div class="stat-box" style="flex:1;padding:12px 16px;"><div class="stat-label">平均分</div><div class="stat-value" style="font-size:22px;">${avg}</div></div>
+      <div class="stat-box" style="flex:1;padding:12px 16px;"><div class="stat-label">達成</div><div class="stat-value" style="font-size:22px;">${Object.values(e.checks).filter(Boolean).length}/${CHECK_ITEMS.length}</div></div>
     </div>
     <div class="section-heading">各項分數</div>
-    <table class="table" style="margin-bottom:16px;">
+    <div class="table-scroll"><table class="table">
       <thead><tr><th>項目</th><th>類別</th><th>分數</th></tr></thead>
-      <tbody>
-        ${SCORE_ITEMS.map(si => {
-          const v = e.scores[si.id];
-          const cls = v>=7?'high':v>=5?'mid':'low';
-          return `<tr><td>${si.label}</td><td style="font-size:12px;color:var(--text3);">${si.category}</td><td><span class="score-badge ${cls}">${v}</span></td></tr>`;
-        }).join('')}
-      </tbody>
-    </table>
+      <tbody>${SCORE_ITEMS.map(si=>{const v=e.scores[si.id];const cls=v>=7?'high':v>=5?'mid':'low';return`<tr><td>${si.label}</td><td style="font-size:11px;color:var(--text3);">${si.category}</td><td><span class="score-badge ${cls}">${v}</span></td></tr>`;}).join('')}</tbody>
+    </table></div>
     <div class="section-heading">勾選項目</div>
-    ${CHECK_ITEMS.map(ci => `
-      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
-        <span style="font-size:16px;">${e.checks[ci.id] ? '✅' : '⬜'}</span>
-        <span style="font-size:13px;color:${e.checks[ci.id]?'var(--text)':'var(--text3)'};">${ci.label}</span>
-      </div>`).join('')}
-    ${e.comment ? `
-      <div class="section-heading" style="margin-top:16px;">評語</div>
-      <div style="background:var(--surface2);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--text2);">${e.comment}</div>
-    ` : ''}
-  `;
-  document.getElementById('detail-modal-body').innerHTML = body;
+    ${CHECK_ITEMS.map(ci=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:18px;">${e.checks[ci.id]?'✅':'⬜'}</span>
+      <span style="font-size:13px;color:${e.checks[ci.id]?'var(--text)':'var(--text3)'};">${ci.label}</span>
+    </div>`).join('')}
+    ${e.comment?`<div class="section-heading" style="margin-top:16px;">評語</div><div style="background:var(--surface2);border-radius:8px;padding:12px 14px;font-size:14px;color:var(--text2);">${e.comment}</div>`:''}`;
   openModal('modal-eval-detail');
 }
 
-// =========================================================
-// ADD RESIDENT
-// =========================================================
-function addResident() {
-  const name = document.getElementById('new-name').value.trim();
-  const start = document.getElementById('new-start').value;
-  const year = document.getElementById('new-year').value;
-  if (!name || !start) { alert('請填寫姓名與開始日期'); return; }
-  const r = {
-    id: `r_${Date.now()}`,
-    name, startDate: start, endDate: null,
-    year, status: 'active'
-  };
-  DB.residents.push(r);
-  saveData(DB);
-  closeModal('modal-add-resident');
-  showPage('residents');
+// ===================== ADD RESIDENT =====================
+function addResident(){
+  const name=document.getElementById('new-name').value.trim();
+  const start=document.getElementById('new-start').value;
+  const year=document.getElementById('new-year').value;
+  if(!name||!start){alert('請填寫姓名與開始日期');return;}
+  DB.residents.push({id:`r_${Date.now()}`,name,startDate:start,endDate:null,year,status:'active'});
+  saveData(DB); closeModal('modal-add-resident'); showPage('residents');
 }
 
-// =========================================================
-// ARCHIVE
-// =========================================================
-function openArchiveModal(id) {
-  archiveTargetId = id;
-  const r = DB.residents.find(x => x.id === id);
-  document.getElementById('archive-name-display').textContent = r.name;
-  document.getElementById('archive-date').value = new Date().toISOString().split('T')[0];
+// ===================== ARCHIVE =====================
+function openArchiveModal(id){
+  archiveTargetId=id;
+  document.getElementById('archive-name-display').textContent=DB.residents.find(x=>x.id===id).name;
+  document.getElementById('archive-date').value=new Date().toISOString().split('T')[0];
   openModal('modal-archive');
 }
-function confirmArchive() {
-  const r = DB.residents.find(x => x.id === archiveTargetId);
-  r.status = 'archived';
-  r.endDate = document.getElementById('archive-date').value;
-  saveData(DB);
-  closeModal('modal-archive');
-  showPage(currentPage);
+function confirmArchive(){
+  const r=DB.residents.find(x=>x.id===archiveTargetId);
+  r.status='archived'; r.endDate=document.getElementById('archive-date').value;
+  saveData(DB); closeModal('modal-archive'); showPage(currentPage);
 }
 
-// =========================================================
-// MODAL HELPERS
-// =========================================================
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-overlay').forEach(el => {
-  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
-});
+// ===================== MODAL HELPERS =====================
+function openModal(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+document.querySelectorAll('.modal-overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el){el.classList.remove('open');document.body.style.overflow='';}}));
 
-// =========================================================
-// INIT
-// =========================================================
-document.getElementById('today-badge').textContent = new Date().toLocaleDateString('zh-TW', { year:'numeric', month:'2-digit', day:'2-digit' });
+// ===================== INIT =====================
+document.getElementById('today-badge').textContent=new Date().toLocaleDateString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit'});
 showPage('dashboard');
 </script>
 </body>
